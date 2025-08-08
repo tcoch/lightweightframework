@@ -2,16 +2,12 @@
 
 namespace LightWeightFramework;
 
-use LightWeightFramework\Exception\UnprocessableRequestException;
 use LightWeightFramework\Http\Request\Request;
 use LightWeightFramework\Http\Response\Response;
 use LightWeightFramework\Routing\Router;
 
 class LightWeightFramework
 {
-    /**
-     * @throws UnprocessableRequestException
-     */
     public function handle(?Request $request = null): Response
     {
         $request = $request ?? Request::createFromGlobals();
@@ -31,17 +27,33 @@ class LightWeightFramework
         if (\is_string($route->method)) {
             $responsePath = __DIR__ . "/../src/Controller/" . $route->method;
 
-            if (file_exists($responsePath)) {
+            // File must exist
+            // File must not be a class
+            if (file_exists($responsePath) && !$this->classExists("App\\Controller\\" . str_replace(".php", "", $route->method))) {
                 ob_start();
                 require $responsePath;
                 if (!$content = ob_get_clean()) {
-                    throw new UnprocessableRequestException("Output buffer error");
+                    return new Response("Output buffer error", 404);
                 }
                 return new Response($content);
             }
         }
 
         // Router returned an unexpected route type > Throw exception
-        throw new UnprocessableRequestException("Couldn't handle request");
+        return new Response("Couldn't handle request", 404);
+    }
+
+    /**
+     * Checks if a class exists. If a procedural script is given, any output it produces is ignored.
+     * @param string $class
+     * @return bool
+     */
+    private function classExists(string $class): bool
+    {
+        ob_start();
+        $exists = class_exists($class); // Requires autoloading enabled
+        ob_end_clean();
+
+        return $exists;
     }
 }

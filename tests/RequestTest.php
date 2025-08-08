@@ -2,7 +2,6 @@
 
 namespace App\Tests;
 
-use LightWeightFramework\Exception\UnprocessableRequestException;
 use LightWeightFramework\Http\Request\Request;
 use LightWeightFramework\LightWeightFramework;
 use LightWeightFramework\Routing\Route;
@@ -91,8 +90,10 @@ class RequestTest extends TestCase
         RouteCollection::addRoute($route);
 
         $request = Request::createFromGlobals()->setRequestUri("/InexistentProceduralScript");
-        $this->expectException(UnprocessableRequestException::class);
-        new LightWeightFramework()->handle($request);
+        $response = new LightWeightFramework()->handle($request);
+
+        self::assertSame(404, $response->getReturnCode());
+        self::assertSame("Couldn't handle request", $response->getContent());
     }
 
     /**
@@ -106,8 +107,10 @@ class RequestTest extends TestCase
         RouteCollection::addRoute($route);
 
         $request = Request::createFromGlobals()->setRequestUri("/InexistentProceduralScript");
-        $this->expectException(UnprocessableRequestException::class);
-        new LightWeightFramework()->handle($request);
+        $response = new LightWeightFramework()->handle($request);
+
+        self::assertSame(404, $response->getReturnCode());
+        self::assertSame("Couldn't handle request", $response->getContent());
     }
 
     public function testOverrideDirectAccessWithRoute(): void
@@ -201,5 +204,15 @@ class RequestTest extends TestCase
         $response = $f->handle($request);
 
         self::assertSame(404, $response->getReturnCode());
+    }
+
+    public function testProceduralRoutingTowardsClassFile(): void
+    {
+        $request = Request::createFromGlobals()->setRequestUri("/EmptyClass.php");
+
+        $response = new LightWeightFramework()->handle($request);
+
+        self::assertSame(404, $response->getReturnCode());
+        self::assertStringContainsString("Couldn't handle request", $response->getContent());
     }
 }
