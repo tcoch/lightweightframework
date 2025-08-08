@@ -3,7 +3,9 @@
 namespace Routing;
 
 use LightWeightFramework\Exception\RouteCollectionGenerationException;
+use LightWeightFramework\Http\Request\Request;
 use LightWeightFramework\Routing\RouteCollection;
+use LightWeightFramework\Routing\Router;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -21,6 +23,13 @@ class RouteCollectionTest extends TestCase
         RouteCollection::clear();
         $this->expectException(RouteCollectionGenerationException::class);
         RouteCollection::getRoutes();
+    }
+
+    public function testRouterDefinitionNotResolved(): void
+    {
+        RouteCollection::clear();
+        $route = Router::resolve(new Request());
+        self::assertNull($route);
     }
 
     public function tearDown(): void
