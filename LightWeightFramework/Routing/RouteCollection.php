@@ -42,7 +42,7 @@ class RouteCollection
      */
     private function defineRoutes(): array
     {
-        $routes = $this->readRoutesDefinition();
+        $routes = array_merge($this->readRoutesDefinition(), $this->createRouteForProceduralScripts());
 
         $routeCollection = [];
         foreach ($routes as $path => $callback) {
@@ -53,7 +53,8 @@ class RouteCollection
     }
 
     /**
-     * @return Route[]
+     * Reads routes defined in src/router.php
+     * @return string[]
      * @throws RouteCollectionGenerationException
      */
     private function readRoutesDefinition(): array
@@ -64,6 +65,27 @@ class RouteCollection
         }
 
         throw new RouteCollectionGenerationException("No routes loaded because file $basefile does not exist");
+    }
+
+    /**
+     * Automatically creates routes for existing procedural script in `src/Controller` folder
+     * @return string[]
+     */
+    private function createRouteForProceduralScripts(): array
+    {
+        $controllerFolder = __DIR__ . '/../../src/Controller/';
+
+        $routes = [];
+        foreach (scandir($controllerFolder) as $fileName) {
+            // Handle only PHP files, that are not associated to a class
+            if (str_ends_with($controllerFolder . $fileName, '.php')
+                && !class_exists("\\App\\Controller\\" . str_replace(".php", "", $fileName), false)
+            ) {
+                $routes["/$fileName"] = $fileName;
+            }
+        }
+
+        return $routes;
     }
 
     public static function addRoute(Route $route): void
