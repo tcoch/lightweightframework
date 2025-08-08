@@ -1,0 +1,11 @@
+{
+    "name": "tcoch/lightweightframework",
+    "description": "A light weight framework build from scratch for training purposes",
+    "license": "MIT",
+    "require-dev": {
+        "php": "^8.4",
+        "phpunit/phpunit": "^12.2",
+        "phpstan/phpstan": "^2.1",
+        "ext-curl": "*"
+    }
+}

@@ -1,0 +1,37 @@
+name: Test framework
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Validate composer.json and composer.lock
+      run: composer validate --strict
+
+    - name: Setup Docker env
+      run: |
+        docker compose build
+        docker compose up --wait
+
+    - name: Install dependencies
+      run: docker exec lightweightframework composer install --prefer-dist --no-progress
+        
+    - name: Run tests suite
+      run: docker exec lightweightframework vendor/bin/phpunit --coverage-clover coverage.xml
+
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v5
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
