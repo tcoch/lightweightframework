@@ -215,4 +215,14 @@ class RequestTest extends TestCase
         self::assertSame(404, $response->getReturnCode());
         self::assertStringContainsString("Couldn't handle request", $response->getContent());
     }
+
+    public function testProceduralScriptWithNoOutput(): void
+    {
+        $request = Request::createFromGlobals()->setRequestUri("/EmptyProcedural.php");
+
+        $response = new LightWeightFramework()->handle($request);
+
+        self::assertSame(404, $response->getReturnCode());
+        self::assertStringContainsString("Output buffer error", $response->getContent());
+    }
 }
