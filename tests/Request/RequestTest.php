@@ -1,6 +1,6 @@
 <?php
 
-namespace Request;
+namespace App\Tests\Request;
 
 use LightWeightFramework\Http\Request\Request;
 use LightWeightFramework\LightWeightFramework;
