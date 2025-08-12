@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests;
+namespace App\Tests\Request;
 
 use LightWeightFramework\Http\Request\Request;
 use LightWeightFramework\Http\Response\Response;
