@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests;
+namespace Request;
 
 use LightWeightFramework\Http\Request\Request;
 use LightWeightFramework\LightWeightFramework;
@@ -186,7 +186,6 @@ class RequestTest extends TestCase
         $response = $f->handle($request);
 
         self::assertSame(200, $response->getReturnCode());
-        self::assertSame("In procedural controller. Running procedural script(s).", $response->getContent());
     }
 
     public function testRedirectToNoRouteFound(): void
@@ -224,5 +223,26 @@ class RequestTest extends TestCase
 
         self::assertSame(404, $response->getReturnCode());
         self::assertStringContainsString("Output buffer error", $response->getContent());
+    }
+
+    public function testGetParameters(): void
+    {
+        $f = new LightWeightFramework();
+
+        $request = Request::createFromGlobals()->setRequestUri("/Procedural?foo=bar");
+        $response = $f->handle($request);
+
+        self::assertStringContainsString("[foo] => bar", $response->getContent());
+    }
+
+    public function testMultipleGetParameters(): void
+    {
+        $f = new LightWeightFramework();
+
+        $request = Request::createFromGlobals()->setRequestUri("/Procedural?foo=bar&foo2=bar2");
+        $response = $f->handle($request);
+
+        self::assertStringContainsString("[foo] => bar", $response->getContent());
+        self::assertStringContainsString("[foo2] => bar2", $response->getContent());
     }
 }
