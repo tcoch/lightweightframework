@@ -1,6 +1,5 @@
 <?php
 
-use App\Controller\EmptyClass;
 use LightWeightFramework\Http\Response\Response;
 use LightWeightFramework\LightWeightFramework;
 
