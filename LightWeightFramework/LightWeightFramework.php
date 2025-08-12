@@ -2,6 +2,7 @@
 
 namespace LightWeightFramework;
 
+use LightWeightFramework\Container\Container;
 use LightWeightFramework\Http\Request\Request;
 use LightWeightFramework\Http\Response\Response;
 use LightWeightFramework\Routing\Router;
@@ -41,6 +42,11 @@ class LightWeightFramework
 
         // Router returned an unexpected route type > Throw exception
         return new Response("Couldn't handle request", 404);
+    }
+
+    public static function getContainer(): Container
+    {
+        return Container::getInstance();
     }
 
     /**
