@@ -21,10 +21,6 @@ try {
     $response = new LightWeightFramework()->handle();
     $response->send();
 } catch (\Exception $e) {
-    $traces = "";
-    foreach ($e->getTrace() as $trace) {
-        $traces .= $trace["file"] . ": " . $trace["line"] . ($trace[1] ?? "") . "<br>";
-    }
-    $response = new Response(sprintf("%s<br><br>%s", $traces, $e->getMessage()), 404);
+    $response = new Response($e->getMessage(), 404);
     $response->send();
 }
