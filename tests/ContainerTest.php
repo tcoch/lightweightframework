@@ -8,6 +8,10 @@ use LightWeightFramework\Http\Request\Request;
 use LightWeightFramework\LightWeightFramework;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @phpstan-ignore method.nonObject
+ * @phpstan-ignore staticMethod.nonObject
+ */
 class ContainerTest extends TestCase
 {
     public function testRequestNeedingAService(): void

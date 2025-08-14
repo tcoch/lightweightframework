@@ -19,7 +19,7 @@ class ResponseHeadersTest extends TestCase
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, "http://localhost/Procedural.php");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HEADER, 1);
+        curl_setopt($ch, CURLOPT_HEADER, true);
         curl_exec($ch);
         $headers = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
 
@@ -43,7 +43,7 @@ EOD;
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, "http://localhost/testContentTypeForced.php");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HEADER, 1);
+        curl_setopt($ch, CURLOPT_HEADER, true);
         curl_exec($ch);
         $headers = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
 
@@ -69,7 +69,7 @@ EOD;
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, "http://localhost/testContentTypeForced.php");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HEADER, 1);
+        curl_setopt($ch, CURLOPT_HEADER, true);
         curl_exec($ch);
         $headers = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
 

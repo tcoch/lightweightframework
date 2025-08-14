@@ -6,7 +6,7 @@ class Response
 {
     protected string $content = "";
 
-    protected ?ResponseHeaders $headers;
+    protected ResponseHeaders $headers;
 
     public function __construct(string $content = "", int $returnCode = 200)
     {
@@ -36,7 +36,7 @@ class Response
         $this->headers->sendHeaders();
     }
 
-    public function getHeaders(): ?ResponseHeaders
+    public function getHeaders(): ResponseHeaders
     {
         return $this->headers;
     }

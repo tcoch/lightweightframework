@@ -11,6 +11,7 @@ class ResponseHeaders
 
     public ?string $location = null;
 
+    /** @var string[] $headers */
     public array $headers = [];
 
     public function sendHeaders(): void
