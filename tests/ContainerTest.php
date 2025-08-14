@@ -8,10 +8,6 @@ use LightWeightFramework\Http\Request\Request;
 use LightWeightFramework\LightWeightFramework;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @phpstan-ignore method.nonObject
- * @phpstan-ignore staticMethod.nonObject
- */
 class ContainerTest extends TestCase
 {
     public function testRequestNeedingAService(): void
@@ -24,15 +20,17 @@ class ContainerTest extends TestCase
     public function testServiceMethodCall(): void
     {
         $container = LightWeightFramework::getContainer();
+        /** @var ServiceA $service */
         $service = $container->get(ServiceA::class);
         self::assertSame('Do', $service->do());
         $this->expectException(\Error::class);
-        self::assertSame('Do', $service::do());
+        self::assertSame('Do', $service::do()); // @phpstan-ignore method.staticCall
     }
 
     public function testServiceStaticMethodCall(): void
     {
         $container = LightWeightFramework::getContainer();
+        /** @var ServiceA $service */
         $service = $container->get(ServiceA::class);
         self::assertSame('Static Do', $service::staticDo());
         self::assertSame('Static Do', $service::staticDo());
