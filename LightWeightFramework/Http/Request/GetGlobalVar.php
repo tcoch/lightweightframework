@@ -7,6 +7,7 @@ namespace LightWeightFramework\Http\Request;
  */
 class GetGlobalVar
 {
+    /** @var string[] $parameters */
     private array $parameters = [];
 
     public function __construct()

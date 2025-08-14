@@ -21,6 +21,7 @@ class Container
         return self::$container;
     }
 
+    /** @var callable[] $services */
     private array $services = [];
 
     public function set(string $id, callable $callable): void

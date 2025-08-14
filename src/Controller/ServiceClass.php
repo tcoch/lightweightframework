@@ -5,6 +5,7 @@ use LightWeightFramework\LightWeightFramework;
 
 $container = LightWeightFramework::getContainer();
 
+/** @var ServiceA $serviceA */
 $serviceA = $container->get(ServiceA::class);
 
 echo $serviceA->do();
