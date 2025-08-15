@@ -11,6 +11,7 @@ class LightWeightFramework
 {
     public function handle(?Request $request = null): Response
     {
+        Container::build();
         $request = $request ?? Request::createFromGlobals();
         $route = Router::resolve($request);
 

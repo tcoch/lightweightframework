@@ -8,21 +8,27 @@ class Container
 {
     private static ?Container $container = null;
 
-    private function __construct() {
-        $this->autowireServices();
+    /** @var callable[] $services */
+    private array $services = [];
+
+    private function __construct() {}
+
+    public static function build(): void
+    {
+        $instance = self::getInstance();
+        $instance->autoRegisterFramework();
+        $instance->autoRegisterServices();
     }
 
     public static function getInstance(): Container
     {
         if (null === self::$container) {
             self::$container = new self();
+            self::build();
         }
 
         return self::$container;
     }
-
-    /** @var callable[] $services */
-    private array $services = [];
 
     public function set(string $id, callable $callable): void
     {
@@ -40,7 +46,7 @@ class Container
         return $callable($this);
     }
 
-    public function autowireServices(): void
+    private function autoRegisterServices(): void
     {
         // Autowiring of services
         $servicesFolder = __DIR__ . '/../../src/Service/';
@@ -48,6 +54,29 @@ class Container
             $className = "App\\Service\\" . str_replace(".php", "", $fileName);
             // Handle only PHP files, that are associated to a class
             if (class_exists($className) && str_ends_with($servicesFolder . $fileName, '.php')) {
+                $this->set($className, function () use ($className) { return new $className(); });
+            }
+        }
+    }
+
+    /**
+     * Automatically adds every framework related classes to the container
+     * @param string $folder Folder where to check for existing classes
+     * @return void
+     */
+    private function autoRegisterFramework(string $folder = __DIR__ . '/../'): void
+    {
+        foreach (scandir($folder) as $fileName) {
+            $className = str_replace(".php", "", $fileName);
+
+            if ('.' !== $fileName && '..' !== $fileName && \is_dir($folder . $fileName)) {
+                $this->autoRegisterFramework($folder . $fileName . '/');
+            }
+
+            $realpath = realpath($folder);
+            $classPath = strstr($realpath, 'LightWeightFramework');
+            $className = str_replace('/', '\\', $classPath) . '\\' . $className;
+            if (class_exists($className) && str_ends_with($folder . $fileName, '.php')) {
                 $this->set($className, function () use ($className) { return new $className(); });
             }
         }
