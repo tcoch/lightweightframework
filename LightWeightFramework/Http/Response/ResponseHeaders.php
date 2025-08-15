@@ -2,6 +2,11 @@
 
 namespace LightWeightFramework\Http\Response;
 
+use LightWeightFramework\Container\Container;
+use LightWeightFramework\Http\Response\Header\ContentTypeHeader;
+use LightWeightFramework\Http\Response\Header\LocationHeader;
+use LightWeightFramework\Http\Response\Header\ResponseHeaderInterface;
+
 class ResponseHeaders
 {
     public const HEADER_LOCATION = 'Location';
@@ -11,72 +16,47 @@ class ResponseHeaders
 
     public ?string $location = null;
 
-    /** @var string[] $headers */
+    /** @var ResponseHeaderInterface[] $headers */
     public array $headers = [];
+
+    public function __construct()
+    {
+        $this->registerHeaders();
+    }
+
+    /**
+     * Registers every class that implements ResponseHeaderInterface to handle the related header
+     * @return void
+     */
+    protected function registerHeaders(): void
+    {
+        foreach (get_declared_classes() as $class) {
+            if (is_a($class, ResponseHeaderInterface::class, true)) {
+                $this->headers[] = new $class;
+            }
+        }
+    }
 
     public function sendHeaders(): void
     {
-        // Update headers based on latest informations (updated location for example)
-        $this->calculateHeaders();
+        foreach ($this->headers as $header) {
+            $header->determineValue();
+        }
 
         switch ($this->statusCode) {
             case 200:
                 header("HTTP/1.0 200 OK");
-                $this->sendContentTypeHeader();
                 break;
             case 302:
                 header("HTTP/1.0 302 Found");
-                $this->sendLocationHeader();
                 break;
             case 404:
                 header("HTTP/1.0 404 Not Found");
                 break;
         }
-    }
 
-    private function calculateHeaders(): void
-    {
-        $this->calculateLocationHeader();
-        $this->calculateContentTypeHeader();
-    }
-
-    private function sendLocationHeader(): void
-    {
-        if (\array_key_exists(self::HEADER_LOCATION, $this->headers)) {
-            header($this->headers[self::HEADER_LOCATION]);
-        }
-    }
-
-    private function sendContentTypeHeader(): void
-    {
-        if (\array_key_exists(self::HEADER_CONTENT_TYPE, $this->headers)) {
-            header($this->headers[self::HEADER_CONTENT_TYPE]);
-        }
-    }
-
-    private function calculateLocationHeader(): void
-    {
-        foreach (headers_list() as $header) {
-            if (str_contains($header, 'Location:')) {
-                $this->headers[self::HEADER_LOCATION] = $header;
-            }
-        }
-
-        if (!\array_key_exists(self::HEADER_LOCATION, $this->headers) && $this->location) {
-            $this->headers[self::HEADER_LOCATION] = 'Location: ' . $this->location;
-        }
-    }
-
-    private function calculateContentTypeHeader(): void
-    {
-        foreach (headers_list() as $header) {
-            if (\str_contains(strtoupper($header), strtoupper('Content-Type'))) {
-                $this->headers[self::HEADER_CONTENT_TYPE] = $header;
-            }
-        }
-
-        if (!\array_key_exists(self::HEADER_CONTENT_TYPE, $this->headers)) {
-            $this->headers[self::HEADER_CONTENT_TYPE] = "Content-Type: text/html; charset=utf-8";
+        foreach ($this->headers as $header) {
+            $header->send();
         }
     }
 }
