@@ -18,7 +18,7 @@ set_error_handler(static function ($errno, $errstr, $errfile, $errline) {
 });
 
 try {
-    $response = new LightWeightFramework()->handle();
+    $response = (new LightWeightFramework())->handle();
     $response->send();
 } catch (\Exception $e) {
     $response = new Response($e->getMessage(), 404);

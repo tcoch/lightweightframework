@@ -20,7 +20,7 @@ class RequestTest extends TestCase
     {
         // Through simulated request
         $request = Request::createFromGlobals()->setRequestUri("/testRouting");
-        $response = new LightWeightFramework()->handle($request);
+        $response = (new LightWeightFramework())->handle($request);
 
         self::assertSame(200, $response->getReturnCode());
         self::assertSame("App\Controller\NotProcedural : Route test.", $response->getContent());
@@ -44,7 +44,7 @@ class RequestTest extends TestCase
     {
         // Through simulated request
         $request = Request::createFromGlobals()->setRequestUri("/Procedural");
-        $response = new LightWeightFramework()->handle($request);
+        $response = (new LightWeightFramework())->handle($request);
 
         self::assertSame(200, $response->getReturnCode());
         self::assertSame("In procedural controller. Running procedural script(s).", $response->getContent());
@@ -67,7 +67,7 @@ class RequestTest extends TestCase
         // > Request is direct to the PHP file in 'public' folder
         // > Not intercepted by index.php and by the framework
         $request = Request::createFromGlobals()->setRequestUri("/DirectAccess.php");
-        $response = new LightWeightFramework()->handle($request);
+        $response = (new LightWeightFramework())->handle($request);
 
         self::assertSame(404, $response->getReturnCode());
 
@@ -90,7 +90,7 @@ class RequestTest extends TestCase
         RouteCollection::addRoute($route);
 
         $request = Request::createFromGlobals()->setRequestUri("/InexistentProceduralScript");
-        $response = new LightWeightFramework()->handle($request);
+        $response = (new LightWeightFramework())->handle($request);
 
         self::assertSame(404, $response->getReturnCode());
         self::assertSame("Couldn't handle request", $response->getContent());
@@ -107,7 +107,7 @@ class RequestTest extends TestCase
         RouteCollection::addRoute($route);
 
         $request = Request::createFromGlobals()->setRequestUri("/InexistentProceduralScript");
-        $response = new LightWeightFramework()->handle($request);
+        $response = (new LightWeightFramework())->handle($request);
 
         self::assertSame(404, $response->getReturnCode());
         self::assertSame("Couldn't handle request", $response->getContent());
@@ -116,7 +116,7 @@ class RequestTest extends TestCase
     public function testOverrideDirectAccessWithRoute(): void
     {
         $request = Request::createFromGlobals()->setRequestUri("/DirectAccessRoute");
-        $response = new LightWeightFramework()->handle($request);
+        $response = (new LightWeightFramework())->handle($request);
 
         self::assertSame(200, $response->getReturnCode());
         self::assertSame("In direct access. Running procedural script(s).", $response->getContent());
@@ -209,7 +209,7 @@ class RequestTest extends TestCase
     {
         $request = Request::createFromGlobals()->setRequestUri("/EmptyClass.php");
 
-        $response = new LightWeightFramework()->handle($request);
+        $response = (new LightWeightFramework())->handle($request);
 
         self::assertSame(404, $response->getReturnCode());
         self::assertStringContainsString("Couldn't handle request", $response->getContent());
@@ -219,7 +219,7 @@ class RequestTest extends TestCase
     {
         $request = Request::createFromGlobals()->setRequestUri("/EmptyProcedural.php");
 
-        $response = new LightWeightFramework()->handle($request);
+        $response = (new LightWeightFramework())->handle($request);
 
         self::assertSame(404, $response->getReturnCode());
         self::assertStringContainsString("Output buffer error", $response->getContent());

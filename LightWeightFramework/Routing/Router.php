@@ -20,6 +20,12 @@ class Router
             return null;
         }
 
-        return array_find($routes, static fn($route) => $route->match($request));
+        foreach ($routes as $route) {
+            if ($route->match($request)) {
+                return $route;
+            }
+        }
+
+        return null;
     }
 }

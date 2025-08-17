@@ -1,4 +1,4 @@
-FROM php:8.4-apache AS upstream
+FROM php:8.1-apache AS upstream
 
 FROM upstream AS base_image
 

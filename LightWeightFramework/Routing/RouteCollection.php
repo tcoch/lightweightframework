@@ -30,7 +30,7 @@ class RouteCollection
     public static function getRoutes(): array
     {
         if (null === self::$routeCollection) {
-            self::$routeCollection = new self()->defineRoutes();
+            self::$routeCollection = (new self())->defineRoutes();
         }
 
         return self::$routeCollection;
