@@ -13,7 +13,7 @@ class ContainerTest extends TestCase
     public function testRequestNeedingAService(): void
     {
         $request = Request::createFromGlobals()->setRequestUri("/ServiceClass.php");
-        $response = new LightWeightFramework()->handle($request);
+        $response = (new LightWeightFramework())->handle($request);
         self::assertSame(200, $response->getReturnCode());
     }
 

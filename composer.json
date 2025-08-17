@@ -3,8 +3,8 @@
     "description": "A light weight framework build from scratch for training purposes",
     "license": "MIT",
     "require-dev": {
-        "php": "^8.4",
-        "phpunit/phpunit": "^12.2",
+        "php": "^8.1",
+        "phpunit/phpunit": "^10",
         "phpstan/phpstan": "^2.1",
         "ext-curl": "*"
     }
