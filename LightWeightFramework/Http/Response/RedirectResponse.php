@@ -13,7 +13,7 @@ class RedirectResponse extends Response
 <html>
     <head>
         <meta charset="UTF-8" />
-        <meta http-equiv="refresh" content="0;url=\'$location\'" />
+        <meta http-equiv="refresh" content="0;url=$location" />
 
         <title>Redirecting to $location</title>
     </head>
