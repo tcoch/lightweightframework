@@ -180,7 +180,7 @@ class RequestTest extends TestCase
 
         self::assertSame(302, $response->getReturnCode());
         $location = $response->getHeaders()->location;
-        self::assertStringContainsString("<meta http-equiv=\"refresh\" content=\"0;url=\'$location\'\" />", $response->getContent());
+        self::assertStringContainsString("<meta http-equiv=\"refresh\" content=\"0;url=$location\" />", $response->getContent());
 
         $request->setRequestUri($location);
         $response = $f->handle($request);
@@ -197,7 +197,7 @@ class RequestTest extends TestCase
 
         self::assertSame(302, $response->getReturnCode());
         $location = $response->getHeaders()->location;
-        self::assertStringContainsString("<meta http-equiv=\"refresh\" content=\"0;url=\'$location\'\" />", $response->getContent());
+        self::assertStringContainsString("<meta http-equiv=\"refresh\" content=\"0;url=$location\" />", $response->getContent());
 
         $request->setRequestUri($location);
         $response = $f->handle($request);
