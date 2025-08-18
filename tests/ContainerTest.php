@@ -3,6 +3,7 @@
 namespace App\Tests;
 
 use App\Service\ServiceA;
+use App\Service\SubService\SubServiceA;
 use LightWeightFramework\Exception\ServiceNotFoundException;
 use LightWeightFramework\Http\Request\Request;
 use LightWeightFramework\LightWeightFramework;
@@ -41,5 +42,14 @@ class ContainerTest extends TestCase
         $container = LightWeightFramework::getContainer();
         $this->expectException(ServiceNotFoundException::class);
         $container->get('App\Service\NonExistingService');
+    }
+
+    public function testSubServiceExistsInContainer(): void
+    {
+        $container = LightWeightFramework::getContainer();
+        self::assertInstanceOf(ServiceA::class, $container->get('App\Service\ServiceA'));
+        self::assertInstanceOf(SubServiceA::class, $container->get('App\Service\SubService\SubServiceA'));
+        self::assertInstanceOf(ServiceA::class, $container->get(ServiceA::class));
+        self::assertInstanceOf(SubServiceA::class, $container->get(SubServiceA::class));
     }
 }
