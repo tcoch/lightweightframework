@@ -2,18 +2,21 @@
 
 namespace LightWeightFramework\Http\Request;
 
+use LightWeightFramework\Superglobals\Get;
+use LightWeightFramework\Superglobals\Server;
+
 class Request
 {
     public static ?Request $request = null;
-    private ServerGlobalVar $requestGlobalVar;
-    private GetGlobalVar $getGlobalVar;
+    private Server $requestGlobalVar;
+    private Get $getGlobalVar;
 
     public static function createFromGlobals(): Request
     {
         if (self::$request === null) {
             self::$request = new self();
-            self::$request->requestGlobalVar = new ServerGlobalVar();
-            self::$request->getGlobalVar = new GetGlobalVar();
+            self::$request->requestGlobalVar = new Server();
+            self::$request->getGlobalVar = new Get();
         }
 
         return self::$request;
