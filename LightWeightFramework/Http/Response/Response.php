@@ -2,17 +2,23 @@
 
 namespace LightWeightFramework\Http\Response;
 
+use LightWeightFramework\Superglobals\Get;
+use LightWeightFramework\Superglobals\Server;
+
 class Response
 {
     protected string $content = "";
 
     protected ResponseHeaders $headers;
 
+    protected Server $serverGlobalVar;
+
     public function __construct(string $content = "", int $returnCode = 200)
     {
         $this->content = $content;
         $this->headers = new ResponseHeaders();
         $this->headers->statusCode = $returnCode;
+        $this->serverGlobalVar = new Server();
     }
 
     public function getContent(): string

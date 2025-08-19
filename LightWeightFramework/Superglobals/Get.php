@@ -1,11 +1,11 @@
 <?php
 
-namespace LightWeightFramework\Http\Request;
+namespace LightWeightFramework\Superglobals;
 
 /**
  * Representation of the $_GET global variable
  */
-class GetGlobalVar
+class Get
 {
     /** @var string[] $parameters */
     private array $parameters = [];

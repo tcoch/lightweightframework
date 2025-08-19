@@ -1,11 +1,11 @@
 <?php
 
-namespace LightWeightFramework\Http\Request;
+namespace LightWeightFramework\Superglobals;
 
 /**
  * Representation of the $_SERVER global variable
  */
-class ServerGlobalVar
+class Server
 {
     private string $requestUri;
 
