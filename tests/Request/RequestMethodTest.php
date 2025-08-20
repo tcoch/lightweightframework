@@ -10,7 +10,6 @@ class RequestMethodTest extends TestCase
 {
     public function testGetRequestWithSimulatedRequest(): void
     {
-        // Through simulated request
         $request = Request::createFromGlobals()
             ->setRequestUri("/HttpMethod.php")
             ->setRequestMethod("GET");
@@ -22,7 +21,6 @@ class RequestMethodTest extends TestCase
 
     public function testGetRequestWithCurl(): void
     {
-        // Through cURL
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, "http://localhost/HttpMethod.php");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -36,7 +34,6 @@ class RequestMethodTest extends TestCase
 
     public function testPostRequestWithSimulatedRequest(): void
     {
-        // Through simulated request
         $request = Request::createFromGlobals()
             ->setRequestUri("/HttpMethod.php")
             ->setRequestMethod("POST");
@@ -48,7 +45,6 @@ class RequestMethodTest extends TestCase
 
     public function testPostRequestWithCurl(): void
     {
-        // Through cURL
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, "http://localhost/HttpMethod.php");
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
@@ -57,6 +53,33 @@ class RequestMethodTest extends TestCase
 
         self::assertSame(200, curl_getinfo($ch, CURLINFO_HTTP_CODE));
         self::assertSame('$_SERVER POSTRequest POST', $output);
+
+        curl_close($ch);
+    }
+
+    public function testPostRequestWithDataWithSimulatedRequest(): void
+    {
+        $request = Request::createFromGlobals()
+            ->setRequestUri("/HttpMethod.php")
+            ->setRequestMethod("POST")
+            ->addPostData("foo", "bar");
+        $response = (new LightWeightFramework())->handle($request);
+
+        self::assertStringContainsString("[foo] => bar", $response->getContent());
+        self::assertStringContainsString('Request value: bar', $response->getContent());
+    }
+
+    public function testPostRequestWithDataWithCurl(): void
+    {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, "http://localhost/HttpMethod.php");
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, ["foo" => "bar"]);
+        $output = curl_exec($ch);
+
+        self::assertStringContainsString('[foo] => bar', $output);
+        self::assertStringContainsString('Request value: bar', $output);
 
         curl_close($ch);
     }
