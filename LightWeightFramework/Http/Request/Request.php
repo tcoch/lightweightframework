@@ -3,13 +3,18 @@
 namespace LightWeightFramework\Http\Request;
 
 use LightWeightFramework\Superglobals\Get;
+use LightWeightFramework\Superglobals\Post;
 use LightWeightFramework\Superglobals\Server;
 
 class Request
 {
     public static ?Request $request = null;
+
     private Server $requestGlobalVar;
+
     private Get $getGlobalVar;
+
+    private Post $postGlobalVar;
 
     public static function createFromGlobals(): Request
     {
@@ -17,6 +22,7 @@ class Request
             self::$request = new self();
             self::$request->requestGlobalVar = new Server();
             self::$request->getGlobalVar = new Get();
+            self::$request->postGlobalVar = new Post();
         }
 
         return self::$request;
@@ -40,5 +46,34 @@ class Request
         $this->getGlobalVar->setQueryString($queryString);
 
         return $this;
+    }
+
+    public function getRequestMethod(): string
+    {
+        return $this->requestGlobalVar->getRequestMethod();
+    }
+
+    public function setRequestMethod(string $httpMethod): Request
+    {
+        $this->requestGlobalVar->setRequestMethod($httpMethod);
+
+        return $this;
+    }
+
+    public function addPostData(string $key, mixed $value): self
+    {
+        $this->postGlobalVar->set($key, $value);
+
+        return $this;
+    }
+
+    public function getPostData(): ?Post
+    {
+        return $this->postGlobalVar ?: null;
+    }
+
+    public function hasPostData(): bool
+    {
+        return $this->postGlobalVar->getValues() !== [];
     }
 }
