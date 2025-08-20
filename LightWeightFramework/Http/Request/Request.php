@@ -41,4 +41,16 @@ class Request
 
         return $this;
     }
+
+    public function getRequestMethod(): string
+    {
+        return $this->requestGlobalVar->getRequestMethod();
+    }
+
+    public function setRequestMethod(string $httpMethod): Request
+    {
+        $this->requestGlobalVar->setRequestMethod($httpMethod);
+
+        return $this;
+    }
 }
