@@ -3,6 +3,7 @@
 namespace LightWeightFramework;
 
 use LightWeightFramework\Container\Container;
+use LightWeightFramework\Exception\OutputBufferException;
 use LightWeightFramework\Http\Request\Request;
 use LightWeightFramework\Http\Response\Response;
 use LightWeightFramework\Routing\Router;
@@ -29,13 +30,18 @@ class LightWeightFramework
         if (\is_string($route->method)) {
             $responsePath = __DIR__ . "/../src/Controller/" . $route->method;
 
-            // File must exist
-            // File must not be a class
-            if (file_exists($responsePath) && !$this->classExists("App\\Controller\\" . str_replace(".php", "", $route->method))) {
+            if (file_exists($responsePath)) {
                 ob_start();
-                require $responsePath;
+                $output = require $responsePath;
+
                 if (!$content = ob_get_clean()) {
-                    return new Response("Output buffer error", 404);
+                    if ($output instanceof Response) {
+                        return $output;
+                    }
+                    if (\is_string($output)) {
+                        return new Response($output);
+                    }
+                    throw new OutputBufferException("Unrecoverable output buffer error");
                 }
                 return new Response($content);
             }
@@ -48,19 +54,5 @@ class LightWeightFramework
     public static function getContainer(): Container
     {
         return Container::getInstance();
-    }
-
-    /**
-     * Checks if a class exists. If a procedural script is given, any output it produces is ignored.
-     * @param string $class
-     * @return bool
-     */
-    private function classExists(string $class): bool
-    {
-        ob_start();
-        $exists = class_exists($class); // Requires autoloading enabled
-        ob_end_clean();
-
-        return $exists;
     }
 }
