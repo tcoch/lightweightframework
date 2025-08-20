@@ -79,7 +79,6 @@ class RouteCollection
         foreach (scandir($controllerFolder) as $fileName) {
             // Handle only PHP files, that are not associated to a class
             if (str_ends_with($controllerFolder . $fileName, '.php')
-                && !class_exists("\\App\\Controller\\" . str_replace(".php", "", $fileName), false)
             ) {
                 $routes["/$fileName"] = $fileName;
             }

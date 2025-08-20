@@ -2,6 +2,7 @@
 
 namespace App\Tests\Request;
 
+use LightWeightFramework\Exception\OutputBufferException;
 use LightWeightFramework\Http\Request\Request;
 use LightWeightFramework\LightWeightFramework;
 use LightWeightFramework\Routing\Route;
@@ -205,24 +206,26 @@ class RequestTest extends TestCase
         self::assertSame(404, $response->getReturnCode());
     }
 
-    public function testProceduralRoutingTowardsClassFile(): void
+    public function testProceduralRoutingTowardsClassFileWithNoOutput(): void
     {
         $request = Request::createFromGlobals()->setRequestUri("/EmptyClass.php");
 
+        $this->expectException(OutputBufferException::class);
         $response = (new LightWeightFramework())->handle($request);
 
         self::assertSame(404, $response->getReturnCode());
-        self::assertStringContainsString("Couldn't handle request", $response->getContent());
+        self::assertStringContainsString("Unrecoverable output buffer error", $response->getContent());
     }
 
     public function testProceduralScriptWithNoOutput(): void
     {
         $request = Request::createFromGlobals()->setRequestUri("/EmptyProcedural.php");
 
+        $this->expectException(OutputBufferException::class);
         $response = (new LightWeightFramework())->handle($request);
 
         self::assertSame(404, $response->getReturnCode());
-        self::assertStringContainsString("Output buffer error", $response->getContent());
+        self::assertStringContainsString("Unrecoverable output buffer error", $response->getContent());
     }
 
     public function testGetParameters(): void
@@ -244,5 +247,25 @@ class RequestTest extends TestCase
 
         self::assertStringContainsString("[foo] => bar", $response->getContent());
         self::assertStringContainsString("[foo2] => bar2", $response->getContent());
+    }
+
+    public function testClassRendersItself(): void
+    {
+        $f = new LightWeightFramework();
+
+        $request = Request::createFromGlobals()->setRequestUri("/HandleRedirect.php");
+        $response = $f->handle($request);
+
+        self::assertSame("HTML raw content goes here", $response->getContent());
+    }
+
+    public function testClassFileReturnsResponse(): void
+    {
+        $f = new LightWeightFramework();
+
+        $request = Request::createFromGlobals()->setRequestUri("/NotProcedural.php");
+        $response = $f->handle($request);
+
+        self::assertSame("HTML content", $response->getContent());
     }
 }
