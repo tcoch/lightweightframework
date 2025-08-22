@@ -10,17 +10,10 @@ class Router
     /**
      * @param Request $request
      * @return Route|null
-     *
      */
     public static function resolve(Request $request): ?Route
     {
-        try {
-            $routes = RouteCollection::getRoutes();
-        } catch (RouteCollectionGenerationException $e) {
-            return null;
-        }
-
-        foreach ($routes as $route) {
+        foreach (RouteCollection::getInstance()->getRoutes() as $route) {
             if ($route->match($request)) {
                 return $route;
             }

@@ -6,93 +6,90 @@ use LightWeightFramework\Exception\RouteCollectionGenerationException;
 
 class RouteCollection
 {
-    /** @var Route[] $routeCollection  */
-    private static ?array $routeCollection = null;
+    private static ?RouteCollection $instance = null;
+
+    /** @var Route[] $routes  */
+    private array $routes = [];
 
     private function __construct()
     {
+        $this->readRoutesDefinition();
     }
 
-    /**
-     * Used only for testing purposes
-     * @internal
-     * @return void
-     */
-    public static function clear(): void
+    public static function getInstance(): RouteCollection
     {
-        self::$routeCollection = null;
-    }
-
-    /**
-     * @return Route[]
-     * @throws RouteCollectionGenerationException
-     */
-    public static function getRoutes(): array
-    {
-        if (null === self::$routeCollection) {
-            self::$routeCollection = (new self())->defineRoutes();
+        if (null === self::$instance) {
+            self::$instance = new self();
+            self::registerPathForDirectRouting('Controller');
         }
 
-        return self::$routeCollection;
-    }
-
-    /**
-     * @return Route[]
-     * @throws RouteCollectionGenerationException
-     */
-    private function defineRoutes(): array
-    {
-        $routes = array_merge($this->readRoutesDefinition(), $this->createRouteForProceduralScripts());
-
-        $routeCollection = [];
-        foreach ($routes as $path => $callback) {
-            $routeCollection[] = new Route($path, $callback);
-        }
-
-        return $routeCollection;
+        return self::$instance;
     }
 
     /**
      * Reads routes defined in src/router.php
-     * @return string[]
-     * @throws RouteCollectionGenerationException
      */
-    private function readRoutesDefinition(): array
+    private function readRoutesDefinition(): void
     {
         if (file_exists($basefile = __DIR__ . '/../../src/router.php')) {
-            $baseRoutes = include $basefile;
-            return array_merge($baseRoutes, self::$routeCollection ?? []);
-        }
+            $routes = include $basefile;
 
-        throw new RouteCollectionGenerationException("No routes loaded because file $basefile does not exist");
+            foreach ($routes as $path => $callback) {
+                if (\is_string($callback)) {
+                    $this->addRoute(new Route($path, 'src/Controller/' . $callback));
+                } else {
+                    $this->addRoute(new Route($path, $callback));
+                }
+            }
+        }
+    }
+
+    public function addRoute(Route $route): void
+    {
+        if (!\array_key_exists($route->path, $this->routes)) {
+            $this->routes[$route->path] = $route;
+        }
     }
 
     /**
-     * Automatically creates routes for existing procedural script in `src/Controller` folder
-     * @return string[]
+     * @param string $path Must be part of the src/ folder
+     * @return void
+     * @throws RouteCollectionGenerationException
      */
-    private function createRouteForProceduralScripts(): array
+    public static function registerPathForDirectRouting(string $path): void
     {
-        $controllerFolder = __DIR__ . '/../../src/Controller/';
+        $path = __DIR__ . '/../../src/' . $path;
+        if (!\is_dir($path)) {
+            throw new RouteCollectionGenerationException("Path $path not found");
+        }
 
         $routes = [];
-        foreach (scandir($controllerFolder) as $fileName) {
+        $path = realpath($path);
+        foreach (scandir($path) as $fileName) {
+            $pathFromSrc = strstr($path, 'src');
+            if ('.' !== $fileName && '..' !== $fileName && \is_dir($path . '/' . $fileName)) {
+                self::registerPathForDirectRouting(str_replace('src/', '', $pathFromSrc) . '/' . $fileName);
+            }
+
             // Handle only PHP files, that are not associated to a class
-            if (str_ends_with($controllerFolder . $fileName, '.php')
-            ) {
-                $routes["/$fileName"] = $fileName;
+            if (str_ends_with($pathFromSrc . '/' . $fileName, '.php')) {
+                $routeFullPathStartingFromSrc = $pathFromSrc . '/' . $fileName;
+                $routePath = str_replace(['src/Controller/', 'src/'], '', $pathFromSrc . '/' . $fileName);
+
+                $routes['/' . $routePath] = $routeFullPathStartingFromSrc;
             }
         }
 
-        return $routes;
+        foreach ($routes as $routePath => $callback) {
+            self::getInstance()->addRoute(new Route($routePath, $callback));
+        }
     }
 
-    public static function addRoute(Route $route): void
+    /**
+     * @return null|Route[]
+     */
+    public function getRoutes(): ?array
     {
-        if (null === self::$routeCollection) {
-            self::$routeCollection = [];
-        }
-
-        self::$routeCollection[] = $route;
+        return $this->routes;
     }
 }

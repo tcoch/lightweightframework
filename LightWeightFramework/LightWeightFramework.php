@@ -28,7 +28,7 @@ class LightWeightFramework
 
         // Route has a method > Try to use it as a procedural script
         if (\is_string($route->method)) {
-            $responsePath = __DIR__ . "/../src/Controller/" . $route->method;
+            $responsePath = __DIR__ . "/../" . $route->method;
 
             if (file_exists($responsePath)) {
                 ob_start();

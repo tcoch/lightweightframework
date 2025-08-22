@@ -4,36 +4,27 @@ namespace Routing;
 
 use LightWeightFramework\Exception\RouteCollectionGenerationException;
 use LightWeightFramework\Http\Request\Request;
+use LightWeightFramework\Routing\Route;
 use LightWeightFramework\Routing\RouteCollection;
 use LightWeightFramework\Routing\Router;
 use PHPUnit\Framework\TestCase;
 
-/**
- * This test renames the routing file router.php before running test (that will fail on purpose)
- */
 class RouteCollectionTest extends TestCase
 {
-    public function setUp(): void
+    public function testDirectRoutingFolderNotExisting(): void
     {
-        rename(__DIR__ . "/../../src/router.php", __DIR__ . "/../../src/routing.php");
-    }
-
-    public function testRouterDefinitionNotFound(): void
-    {
-        RouteCollection::clear();
         $this->expectException(RouteCollectionGenerationException::class);
-        RouteCollection::getRoutes();
+        RouteCollection::registerPathForDirectRouting('fakePath');
     }
 
-    public function testRouterDefinitionNotResolved(): void
+    public function testAddDirectRoutingOnServices(): void
     {
-        RouteCollection::clear();
-        $route = Router::resolve(new Request());
-        self::assertNull($route);
-    }
+        RouteCollection::registerPathForDirectRouting('Service');
 
-    public function tearDown(): void
-    {
-        rename(__DIR__ . "/../../src/routing.php", __DIR__ . "/../../src/router.php");
+        $routes = RouteCollection::getInstance()->getRoutes();
+        $paths = array_map(function (Route $route) { return $route->path; }, $routes);
+        self::assertContains('/Service/ServiceA.php', $paths);
+        self::assertContains('/Service/SubService/SubServiceA.php', $paths);
+        self::assertNotContains('/Service/DummyService', $paths);
     }
 }

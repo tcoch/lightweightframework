@@ -2,6 +2,7 @@
 
 use LightWeightFramework\Http\Response\Response;
 use LightWeightFramework\LightWeightFramework;
+use LightWeightFramework\Routing\RouteCollection;
 
 // Auto-register classes
 spl_autoload_register(static function ($class) {
@@ -16,6 +17,8 @@ spl_autoload_register(static function ($class) {
 set_error_handler(static function ($errno, $errstr, $errfile, $errline) {
     throw new \ErrorException($errstr, 0, $errno, $errfile, $errline);
 });
+
+RouteCollection::registerPathForDirectRouting('Service');
 
 try {
     $response = (new LightWeightFramework())->handle();

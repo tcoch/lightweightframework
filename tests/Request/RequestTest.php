@@ -88,7 +88,7 @@ class RequestTest extends TestCase
     public function testRequestNotProcessable(): void
     {
         $route = new Route("/InexistentProceduralScript", 'InexistentProceduralScript.php');
-        RouteCollection::addRoute($route);
+        RouteCollection::getInstance()->addRoute($route);
 
         $request = Request::createFromGlobals()->setRequestUri("/InexistentProceduralScript");
         $response = (new LightWeightFramework())->handle($request);
@@ -105,7 +105,7 @@ class RequestTest extends TestCase
     public function testRequestToInexistentProceduralScript(): void
     {
         $route = new Route("/InexistentProceduralScript", 'InexistentProceduralScript.php');
-        RouteCollection::addRoute($route);
+        RouteCollection::getInstance()->addRoute($route);
 
         $request = Request::createFromGlobals()->setRequestUri("/InexistentProceduralScript");
         $response = (new LightWeightFramework())->handle($request);
