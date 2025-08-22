@@ -39,19 +39,11 @@ class RoutingTest extends TestCase
 
     public function testAddRouteToCollection(): void
     {
+        $routeCollection = RouteCollection::getInstance();
         $route = new Route('dummy_path', 'dummy_callback');
-        self::assertNotContains($route, RouteCollection::getRoutes());
+        self::assertNotContains($route, $routeCollection->getRoutes());
 
-        RouteCollection::addRoute($route);
-        self::assertContains($route, RouteCollection::getRoutes());
-    }
-
-    public function testAddRouteUninitializedCollection(): void
-    {
-        RouteCollection::clear();
-        $route = new Route('dummy_path', 'dummy_callback');
-        RouteCollection::addRoute($route);
-        self::assertContains($route, RouteCollection::getRoutes());
-        self::assertCount(1, RouteCollection::getRoutes());
+        $routeCollection->addRoute($route);
+        self::assertContains($route, $routeCollection->getRoutes());
     }
 }
