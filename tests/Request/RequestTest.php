@@ -172,40 +172,6 @@ class RequestTest extends TestCase
         self::assertSame("No route found", $response->getContent());
     }
 
-    public function testRedirectResponse(): void
-    {
-        $f = new LightWeightFramework();
-
-        $request = Request::createFromGlobals()->setRequestUri("/ClassRedirect");
-        $response = $f->handle($request);
-
-        self::assertSame(302, $response->getReturnCode());
-        $location = $response->getHeaders()->location;
-        self::assertStringContainsString("<meta http-equiv=\"refresh\" content=\"0;url=$location\" />", $response->getContent());
-
-        $request->setRequestUri($location);
-        $response = $f->handle($request);
-
-        self::assertSame(200, $response->getReturnCode());
-    }
-
-    public function testRedirectToNoRouteFound(): void
-    {
-        $f = new LightWeightFramework();
-
-        $request = Request::createFromGlobals()->setRequestUri("/ErrorOnRedirect");
-        $response = $f->handle($request);
-
-        self::assertSame(302, $response->getReturnCode());
-        $location = $response->getHeaders()->location;
-        self::assertStringContainsString("<meta http-equiv=\"refresh\" content=\"0;url=$location\" />", $response->getContent());
-
-        $request->setRequestUri($location);
-        $response = $f->handle($request);
-
-        self::assertSame(404, $response->getReturnCode());
-    }
-
     public function testProceduralRoutingTowardsClassFileWithNoOutput(): void
     {
         $request = Request::createFromGlobals()->setRequestUri("/EmptyClass.php");

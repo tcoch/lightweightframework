@@ -5,6 +5,7 @@ namespace LightWeightFramework;
 use LightWeightFramework\Container\Container;
 use LightWeightFramework\Exception\OutputBufferException;
 use LightWeightFramework\Http\Request\Request;
+use LightWeightFramework\Http\Response\RedirectResponse;
 use LightWeightFramework\Http\Response\Response;
 use LightWeightFramework\Routing\Router;
 
@@ -33,17 +34,18 @@ class LightWeightFramework
             if (file_exists($responsePath)) {
                 ob_start();
                 $output = require $responsePath;
+                $content = ob_get_clean();
 
-                if (!$content = ob_get_clean()) {
-                    if ($output instanceof Response) {
-                        return $output;
-                    }
-                    if (\is_string($output)) {
-                        return new Response($output);
-                    }
-                    throw new OutputBufferException("Unrecoverable output buffer error");
+                if (\is_string($output)) {
+                    $output = new Response($output);
                 }
-                return new Response($content);
+                if ($output instanceof Response) {
+                    return $output;
+                }
+                if (\is_string($content) && $content !== "") {
+                    return new Response($content);
+                }
+                throw new OutputBufferException("Unrecoverable output buffer error");
             }
         }
 
