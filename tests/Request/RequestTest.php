@@ -234,4 +234,14 @@ class RequestTest extends TestCase
 
         self::assertSame("HTML content", $response->getContent());
     }
+
+    public function testDirectAccessToService(): void
+    {
+        $f = new LightWeightFramework();
+
+        $request = Request::createFromGlobals()->setRequestUri("/Service/ServiceA.php");
+        $response = $f->handle($request);
+
+        self::assertSame("Do", $response->getContent());
+    }
 }
