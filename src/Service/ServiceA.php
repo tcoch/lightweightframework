@@ -2,6 +2,8 @@
 
 namespace App\Service;
 
+return (new ServiceA())->do();
+
 class ServiceA
 {
     public string $name = "Service A";
