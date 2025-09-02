@@ -5,12 +5,23 @@ namespace LightWeightFramework;
 use LightWeightFramework\Container\Container;
 use LightWeightFramework\Exception\OutputBufferException;
 use LightWeightFramework\Http\Request\Request;
-use LightWeightFramework\Http\Response\RedirectResponse;
 use LightWeightFramework\Http\Response\Response;
 use LightWeightFramework\Routing\Router;
 
 class LightWeightFramework
 {
+    public function __construct()
+    {
+        $this->configure();
+    }
+
+    public function configure(string $path = __DIR__ . '/../src/configure.php'): void
+    {
+        if (file_exists($path)) {
+            include $path;
+        }
+    }
+
     public function handle(?Request $request = null): Response
     {
         Container::build();

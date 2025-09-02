@@ -1,6 +1,7 @@
 <?php
 
 // Auto-register classes
+use LightWeightFramework\LightWeightFramework;
 use LightWeightFramework\Routing\RouteCollection;
 
 spl_autoload_register(function ($class) {
@@ -15,5 +16,3 @@ spl_autoload_register(function ($class) {
 set_error_handler(function ($errno, $errstr, $errfile, $errline) {
     throw new \ErrorException($errstr, 0, $errno, $errfile, $errline);
 });
-
-RouteCollection::registerPathForDirectRouting('Service');
