@@ -46,4 +46,9 @@ class Response
     {
         return $this->headers;
     }
+
+    public function getUri(): string
+    {
+        return $this->serverGlobalVar->getRequestUri();
+    }
 }

@@ -39,4 +39,24 @@ class ResponseTest extends TestCase
 
         self::assertSame(302, $response->getReturnCode());
     }
+
+    public function testResponseUri(): void
+    {
+        $f = new LightWeightFramework();
+
+        $request = Request::createFromGlobals()->setRequestUri("/DirectAccess.php");
+        $response = $f->handle($request);
+
+        self::assertSame('/DirectAccess.php', $response->getUri());
+    }
+
+    public function testResponseUriInCaseOfRedirect(): void
+    {
+        $f = new LightWeightFramework();
+
+        $request = Request::createFromGlobals()->setRequestUri("/ClassRedirect");
+        $response = $f->handle($request);
+
+        self::assertSame('/ClassRedirect', $response->getUri());
+    }
 }
