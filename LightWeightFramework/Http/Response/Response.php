@@ -11,7 +11,7 @@ class Response
 
     protected ResponseHeaders $headers;
 
-    protected Server $serverGlobalVar;
+    public Server $serverGlobalVar;
 
     public function __construct(string $content = "", int $returnCode = 200)
     {
@@ -45,5 +45,10 @@ class Response
     public function getHeaders(): ResponseHeaders
     {
         return $this->headers;
+    }
+
+    public function getUri(): string
+    {
+        return $this->serverGlobalVar->getRequestUri();
     }
 }
