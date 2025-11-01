@@ -11,7 +11,7 @@ class Response
 
     protected ResponseHeaders $headers;
 
-    protected Server $serverGlobalVar;
+    public Server $serverGlobalVar;
 
     public function __construct(string $content = "", int $returnCode = 200)
     {
