@@ -53,6 +53,12 @@ class ResponseHeaders
             case 404:
                 header("HTTP/1.0 404 Not Found");
                 break;
+            default:
+                if ($this->statusCode < 100 || $this->statusCode > 599) {
+                    throw new \LogicException("HTTP status code {$this->statusCode} is invalid.");
+                }
+                header("HTTP/1.0 {$this->statusCode}");
+                break;
         }
 
         foreach ($this->headers as $header) {

@@ -77,4 +77,21 @@ EOD;
 
         unlink($filePath);
     }
+
+    public function testStatusCodeValidity(): void
+    {
+        $response = new Response("", 599);
+        $response->getHeaders()->sendHeaders();
+        self::assertSame(599, $response->getHeaders()->statusCode);
+        $response = new Response("", 100);
+        $response->getHeaders()->sendHeaders();
+        self::assertSame(100, $response->getHeaders()->statusCode);
+
+        $response = new Response("", 99);
+        $this->expectException(\LogicException::class);
+        $response->getHeaders()->sendHeaders();
+        $response = new Response("", 600);
+        $this->expectException(\LogicException::class);
+        $response->getHeaders()->sendHeaders();
+    }
 }
