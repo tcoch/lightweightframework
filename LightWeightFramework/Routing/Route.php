@@ -21,8 +21,11 @@ class Route
 
     public mixed $callback = null;
 
-    public function match(Request $request) : bool {
-        return $this->path === $request->getRequestUri();
+    public function match(Request $request) : bool
+    {
+        $path = str_replace(['/', '.'], ['\/', '\.'], $this->path);
+
+        return preg_match('/^'.$path.'$/', $request->getRequestUri());
     }
 
     /**
